@@ -1,0 +1,32 @@
+https://colab.research.google.com/drive/1FFHgmjEkqXw2QQOaCtAJnUOVFnKyz6aV?usp=sharing
+
+
+def dfs(graph, start, visited, closure):
+    visited[start] = True
+    closure.append(start)
+    for next_state, has_epsilon in enumerate(graph[start]):
+        print(start, next_state, has_epsilon)
+        if has_epsilon and not visited[next_state]:
+            dfs(graph, next_state, visited, closure)
+
+def epsilon_closures(graph):
+    n = len(graph)
+    for i in range(n):
+        visited = [False] * n
+        closure = []
+        dfs(graph, i, visited, closure)
+        print(f"Epsilon closure of state {i}:", closure)
+num_states = int(input("Number of states: "))
+graph = [[0] * num_states for _ in range(num_states)]
+print("Enter epsilon transitions (format: from to). Type 'done' to finish:")
+while True:
+    line = input()
+    if line.lower() == "done":
+        break
+    try:
+        from_state, to_state = map(int, line.strip().split())
+        graph[from_state][to_state] = 1
+    except ValueError:
+        print("Invalid input. Please enter transitions as two integers or 'done'.")
+
+epsilon_closures(graph)
