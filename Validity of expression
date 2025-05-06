@@ -1,0 +1,45 @@
+prl.l
+%{
+#nclude &quot;prl.tab.h&quot;
+%}
+%%
+[_a-zA-Z][_a-zA-Z0-9]* return ID;
+[0-9]+ return NUM;
+[ \t] {;}
+\n return 0;
+. return yytext[0];
+%%
+
+prl.y
+%{
+#include&lt;stdio.h&gt;
+void yyerror(char *s);
+%}
+%token NUM ID
+%left &#39;+&#39; &#39;-&#39;
+
+%left &#39;*&#39; &#39;/&#39;
+%%
+stmt:exp
+;
+exp:exp &#39;+&#39; exp
+|exp &#39;-&#39; exp
+|exp &#39;*&#39; exp
+|exp &#39;/&#39; exp
+|&#39;(&#39;exp&#39;)&#39;
+|NUM
+|ID
+;
+%%
+int main()
+{
+printf(&quot;\n Enter an expression&quot;);
+yyparse();
+printf(&quot;\n Valid Expression&quot;);
+return 0;
+}
+
+void yyerror(char *s)
+{
+printf(&quot;\n Invalid expression&quot;);
+}
