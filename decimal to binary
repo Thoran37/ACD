@@ -1,0 +1,45 @@
+decbin.l
+%{
+#include &quot;decbin.tab.h&quot;
+extern int yylval;
+%}
+%%
+[0-9]+ {yylval=atoi(yytext);
+return NUM;}
+\n return 0;
+%%
+
+decbin.y
+%{
+#include&lt;stdio.h&gt;
+
+int x,p,r,b;
+void yyerror(char *s);
+%}
+%token NUM
+%%
+start:NUM {x=$1;p=1;b=0;
+while(x!=0)
+{
+r=x%2;
+x=x/2;
+b=b+(r*p);
+p=p*10;
+}
+printf(&quot;%d\n&quot;,b);
+}
+
+%%
+main()
+{
+yyparse();
+
+}
+void yyerror(char *s)
+{
+printf(&quot;Error\n&quot;);
+}
+int yywrap()
+{
+return 1;
+}
