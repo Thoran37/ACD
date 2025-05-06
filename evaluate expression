@@ -1,34 +1,32 @@
 ar.l
 %{
-#include &quot;ar.tab.h&quot;
+#include "ar.tab.h"
 extern int yylval;
 %}
 %%
 [0-9]+ {yylval=atoi(yytext);
-return NUM;}
+        return NUM;}
 \n return 0;
-
 . return yytext[0];
 %%
 
 ar.y
 %{
-#include&lt;stdio.h&gt;
+#include<stdio.h>
 void yyerror(char *s);
 %}
 %token NUM
-%left &#39;+&#39; &#39;-&#39;
+%left '+' '-'
 %%
-sen:exp {printf(&quot;%d&quot;,$$);};
-exp:exp&#39;+&#39;exp {$$=$1+$3;}
-|exp&#39;-&#39;exp {$$=$1-$3;}
-|NUM {$$=$1;};
+sen:exp {printf("%d",$$);};
+exp:exp'+'exp {$$=$1+$3;}
+   |exp'-'exp {$$=$1-$3;}
+   |NUM {$$=$1;};
 %%
 void yyerror(char *s)
 {
-fprintf(stderr,&quot;%s\n&quot;,s);
+fprintf(stderr,"%s\n",s);
 }
-
 int yywrap()
 {
 return 1;
