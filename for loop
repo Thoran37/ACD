@@ -1,0 +1,92 @@
+// Lex file: for.l
+alpha [A-Za-z]
+digit [0-9]
+%%
+[\t \n]
+for             return FOR;
+{digit}+    return NUM;
+{alpha}({alpha}|{digit})* return ID;
+&quot;&lt;=&quot;         return LE;
+&quot;&gt;=&quot;         return GE;
+&quot;==&quot;         return EQ;
+&quot;!=&quot;          return NE;
+&quot;||&quot;            return OR;
+&quot;&amp;&amp;&quot;         return AND;
+.                return yytext[0];
+%%
+// Yacc file: for.y
+%{
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+%}
+%token ID NUM FOR LE GE EQ NE OR AND
+%right &quot;=&quot;
+%left OR AND
+%left &#39;&gt;&#39; &#39;&lt;&#39; LE GE EQ NE
+%left &#39;+&#39; &#39;-&#39;
+%left &#39;*&#39; &#39;/&#39;
+%right UMINUS
+%left &#39;!&#39;
+%%
+   
+S         : ST {printf(&quot;Input accepted\n&quot;); exit(0);}
+ST       : FOR &#39;(&#39; E &#39;;&#39; E2 &#39;;&#39; E &#39;)&#39; DEF
+           ;
+DEF    : &#39;{&#39; BODY &#39;}&#39;
+           | E&#39;;&#39;
+           | ST
+           |
+           ;
+BODY  : BODY BODY
+           | E &#39;;&#39;       
+           | ST
+
+           |            
+           ;
+       
+E        : ID &#39;=&#39; E
+          | E &#39;+&#39; E
+          | E &#39;-&#39; E
+          | E &#39;*&#39; E
+          | E &#39;/&#39; E
+          | E &#39;&lt;&#39; E
+          | E &#39;&gt;&#39; E
+          | E LE E
+          | E GE E
+          | E EQ E
+          | E NE E
+          | E OR E
+          | E AND E
+          | E &#39;+&#39; &#39;+&#39;
+          | E &#39;-&#39; &#39;-&#39;
+          | ID 
+          | NUM
+          ;
+   
+E2     : E&#39;&lt;&#39;E
+         | E&#39;&gt;&#39;E
+         | E LE E
+         | E GE E
+         | E EQ E
+         | E NE E
+         | E OR E
+         | E AND E
+         ;   
+%%
+#include &quot;lex.yy.c&quot;
+main() {
+    printf(&quot;Enter the expression:\n&quot;);
+    yyparse();
+}     
+     
+Output:
+nn@linuxmint ~ $ lex for.l
+nn@linuxmint ~ $ yacc for.y
+conflicts: 25 shift/reduce, 4 reduce/reduce
+nn@linuxmint ~ $ gcc y.tab.c -ll -ly
+nn@linuxmint ~ $ ./a.out
+Enter the expression:
+for(i=0;i&lt;n;i++)
+i=i+1;
+Input accepted
+nn@linuxmint ~ $
